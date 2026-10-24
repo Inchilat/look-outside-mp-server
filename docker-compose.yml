@@ -1,7 +1,0 @@
-services:
-  look-outside-mp:
-    build: .
-    container_name: look-outside-mp
-    restart: unless-stopped
-    ports:
-      - "8787:8787"
