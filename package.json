@@ -1,0 +1,14 @@
+{
+  "name": "look-outside-mp-server",
+  "version": "0.8.0",
+  "private": true,
+  "description": "Room server for the Look Outside multiplayer mod",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
