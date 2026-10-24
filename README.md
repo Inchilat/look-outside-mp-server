@@ -1,7 +1,7 @@
 # Look Outside MP — server and host app
 
-Room server and **host app** for **Look Outside MP**, a co-op multiplayer mod (up to 4 players) for
-[Look Outside](https://store.steampowered.com/app/3373660/) (RPG Maker MZ).
+Room server and **host app** for [**Look Outside MP**](https://www.nexusmods.com/lookoutside/mods/182), a co-op multiplayer mod (up to 4 players) for
+[Look Outside](https://store.steampowered.com/app/3373660/).
 
 > Unofficial fan project, not affiliated with the developers of Look Outside.
 > This repository contains the server side only: no game files and no mod. The mod itself is published on Nexus Mods.
@@ -51,18 +51,12 @@ npm run host                        # host app from the sources: server + contro
 node host/server/server.js          # only the room server (PORT=9000 for another port)
 ```
 
-Docker (a VPS, for example):
+Docker:
 
 ```bash
 cd host/server
 docker compose up -d --build        # port 8787
 ```
-
-### GitHub Actions
-
-`.github/workflows/build.yml` builds and checks the app on Windows, macOS and Linux. Actions tab → *build* →
-*Run workflow*: the zips are attached to the run; fill *release* (e.g. `v0.13.0`, it must match the version in
-`package.json`) to publish them as a GitHub release. Pushing a tag like `v0.13.0` does the same.
 
 ## Protocol
 
