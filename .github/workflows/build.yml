@@ -1,0 +1,77 @@
+# Builds the host app (room server + control page) for Windows, macOS and Linux.
+# Run by hand (Actions tab -> build -> Run workflow): tests + executables as workflow artifacts;
+# fill "release" (e.g. v0.13.0) to also publish a GitHub release: the tag is created on the commit built.
+# Pushing a tag like v0.8.0 does the same.
+name: build
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Publish a release with this tag (e.g. v0.13.0); empty = build only"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  app:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows-x64
+          - os: macos-latest
+            name: macos-arm64
+          - os: ubuntu-latest
+            name: linux-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm test
+      - run: node host/app/build.js
+      - name: Start the executable and check it
+        shell: bash
+        run: node host/app/check-exe.js build/look-outside-mp-host-*
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path build/look-outside-mp-host-*.exe, build/THIRD-PARTY-NOTICES.txt -DestinationPath look-outside-mp-host-${{ matrix.name }}.zip
+      - name: Package (macOS / Linux)
+        if: runner.os != 'Windows'
+        run: cd build && zip -9 ../look-outside-mp-host-${{ matrix.name }}.zip look-outside-mp-host-* THIRD-PARTY-NOTICES.txt
+      - uses: actions/upload-artifact@v5
+        with:
+          name: look-outside-mp-host-${{ matrix.name }}
+          path: look-outside-mp-host-${{ matrix.name }}.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v') || startsWith(inputs.release, 'v')
+    needs: app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: The tag must match the version in package.json
+        env:
+          TAG: ${{ inputs.release || github.ref_name }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          test "v$v" = "$TAG" || { echo "tag $TAG but package.json says $v"; exit 1; }
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          files: artifacts/*
+          generate_release_notes: true

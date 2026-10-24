@@ -1,14 +1,23 @@
 {
   "name": "look-outside-mp-server",
-  "version": "0.8.0",
+  "version": "0.13.0",
   "private": true,
-  "description": "Room server for the Look Outside multiplayer mod",
-  "main": "server.js",
+  "description": "Room server and host app for Look Outside MP, a co-op multiplayer mod for Look Outside",
+  "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "test": "node test.js"
+    "host": "node host/app/main.js",
+    "server": "node host/server/server.js",
+    "test": "node tests/server/test.js && node tests/host/test.js",
+    "build:app": "node host/app/build.js"
   },
   "dependencies": {
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "postject": "^1.0.0-alpha.6"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
