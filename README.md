@@ -22,7 +22,7 @@ Requirements: [Node.js 22](https://nodejs.org/) (the executable is made from the
 and Git. Build on the system you want the executable for (Windows, macOS or Linux).
 
 ```bash
-git clone https://github.com/<owner>/<this-repo>.git
+git clone https://github.com/Inchilat/look-outside-mp-server.git
 cd <this-repo>
 npm ci                    # dependencies: ws (runtime), esbuild + postject (build only)
 npm test                  # room server + host app tests
